@@ -1,0 +1,20 @@
+name: "Scan de Securite"
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  analyse-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialiser CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'javascript'
+
+      - name: Lancer le scan
+        uses: github/codeql-action/analyze@v3
