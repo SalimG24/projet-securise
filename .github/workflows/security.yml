@@ -1,20 +1,35 @@
-name: "Scan de Securite"
+name: "Audit de Sécurité Client"
 
 on:
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  analyse-code:
+  analyse:
+    name: Scanner Multi-Langages
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write # Autorise GitHub à afficher les failles
+      actions: read
+      contents: read
+
     steps:
-      - name: Checkout code
+      - name: Récupérer le code client
         uses: actions/checkout@v4
 
-      - name: Initialiser CodeQL
+      - name: Initialiser l'IA de sécurité (CodeQL)
         uses: github/codeql-action/init@v3
         with:
-          languages: 'javascript'
+          # Ici, CodeQL va tenter de deviner tout seul les langages présents
+          languages: ${{ matrix.language }}
+          # On active les requêtes de sécurité étendues (le mode "Sévère")
+          queries: security-extended,security-and-quality
 
-      - name: Lancer le scan
+    strategy:
+      fail-fast: false
+      matrix:
+        # On liste les langages que tu veux supporter pour tes clients
+        language: [ 'javascript', 'python', 'java', 'ruby', 'go' ]
+
+      - name: Lancer l'analyse approfondie
         uses: github/codeql-action/analyze@v3
